@@ -8,11 +8,11 @@ readme = "README.md"
 packages = [{include = "pritunl_slack_app"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-pritunl-api = "^1.1.5"
+python = ">=3.8,<4.0"
 slack-bolt = "^1.17.0"
 flask = {version = "^2.2.3", optional = true}
 gunicorn = {version = "^20.1.0", optional = true}
+pritunl-api = "^1.1.6"
 
 [tool.poetry.extras]
 flask =  ["flask", "gunicorn"]
