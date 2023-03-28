@@ -1,0 +1,119 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  pritunl-slack-app
+
+  Sample SAM Template for pritunl-slack-app
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "General"
+        Parameters:
+          - PritunlBaseUrl
+          - PritunlApiToken
+          - PritunlApiSecret
+          - SlackSigningSecret
+          - SlackBotToken
+
+  AWS::ServerlessRepo::Application:
+    Name: pritunl-slack-app
+    Description: Pritunl Slack App Slash Commands
+    Author: Nathaniel Varona
+    SpdxLicenseId: MIT
+    LicenseUrl: LICENSE
+    ReadmeUrl: README.md
+    Labels: [serverless, lambda, pritunl, vpn]
+    HomePageUrl: https://github.com/nathanielvarona/pritunl-slack-app
+    SemanticVersion: 0.1.0
+    SourceCodeUrl: https://github.com/nathanielvarona/pritunl-slack-app
+
+Parameters:
+  PritunlBaseUrl:
+    Type: String
+    Description: EnvVar for PRITUNL_BASE_URL
+
+  PritunlApiToken:
+    Type: String
+    Description: EnvVar for PRITUNL_API_TOKEN
+
+  PritunlApiSecret:
+    Type: String
+    Description: EnvVar for PRITUNL_API_SECRET
+
+  SlackSigningSecret:
+    Type: String
+    Description: EnvVar for SLACK_SIGNING_SECRET
+
+  SlackBotToken:
+    Type: String
+    Description: EnvVar for SLACK_BOT_TOKEN
+
+
+Globals:
+  Function:
+    Timeout: 3
+    MemorySize: 128
+
+Resources:
+  PritunlSlackFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: pritunl_slack_app/function
+      Handler: function_handler.handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          PRITUNL_BASE_URL: !Ref PritunlBaseUrl
+          PRITUNL_API_TOKEN: !Ref PritunlApiToken
+          PRITUNL_API_SECRET: !Ref PritunlApiSecret
+          SLACK_SIGNING_SECRET: !Ref SlackSigningSecret
+          SLACK_BOT_TOKEN: !Ref SlackBotToken
+
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Sid: InvokeLambda
+              Effect: Allow
+              Action:
+                - "lambda:InvokeFunction"
+                - "lambda:InvokeAsync"
+              Resource:
+                - "*"
+      Events:
+        PritunlSlack:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: POST
+            ApiId: !Ref PritunlSlackHttpApi
+
+  PritunlSlackHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowMethods:
+          - POST
+        AllowOrigins:
+          - "*"
+        AllowHeaders:
+          - content-type
+          - x-amz-date
+          - authorization
+          - x-api-key
+          - x-amz-security-token
+          - x-amz-user-agent
+
+Outputs:
+  PritunlSlackApi:
+    Description: "API Gateway endpoint URL for Prod stage for Pritunl Slack App function"
+    Value: !Sub "https://${PritunlSlackHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/"
+  PritunlSlackFunction:
+    Description: "Pritunl Slack App Lambda Function ARN"
+    Value: !GetAtt PritunlSlackFunction.Arn
+  PritunlSlackFunctionIamRole:
+    Description: "Implicit IAM Role created for Pritunl Slack App function"
+    Value: !GetAtt PritunlSlackFunctionRole.Arn
