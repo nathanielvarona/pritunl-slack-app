@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "pritunl-slack-app"
+version = "0.1.0"
+description = "Pritunl Slack App Slash Commands"
+authors = ["Nathaniel Varona <nathaniel.varona+pypi@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "pritunl_slack_app"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pritunl-api = "^1.1.5"
+slack-bolt = "^1.17.0"
+flask = {version = "^2.2.3", optional = true}
+gunicorn = {version = "^20.1.0", optional = true}
+
+[tool.poetry.extras]
+flask =  ["flask", "gunicorn"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

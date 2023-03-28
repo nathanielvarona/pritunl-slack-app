@@ -1,0 +1,13 @@
+# Bolt Flask for Local Development Only
+export FLASK_APP=pritunl_slack_app/flask_handler.py
+export FLASK_DEBUG=True
+export FLASK_RUN_PORT=9000
+
+# Slack App
+export SLACK_BOT_TOKEN=""
+export SLACK_SIGNING_SECRET=""
+
+# Pritunl API
+export PRITUNL_BASE_URL=""
+export PRITUNL_API_SECRET=""
+export PRITUNL_API_TOKEN=""
