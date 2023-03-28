@@ -1,0 +1,118 @@
+import string
+
+from random import choice
+from urllib.parse import urlparse
+
+from slack_bolt import App
+app = App(process_before_response=True)
+
+from pritunl_api import Pritunl
+pritunl = Pritunl()
+
+from pritunl_api.utils.query import org_user
+from pritunl_api.utils.genkey import profile_key
+
+@app.middleware
+def log_request(logger, body, next):
+    logger.debug(body)
+    return next()
+
+
+def validate_command(body):
+    command_args = body.get("text")
+    if command_args is None or len(command_args) == 0:
+        return False
+    else:
+        command = command_args.split()
+        if len(command) == 2:
+            if command[0] and command[1]:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+
+def initial_acknowledgement(body, ack):
+    def command_usage():
+        return str(f"*:book: Usage:* `{body['command']} profile-key [NETWORK]`")
+
+    def command_accepted():
+        return str(f"*:ballot_box_with_check: Request Accepted:* `{' '.join([body['command'], body['text']])}`")
+
+    ack(command_accepted() if validate_command(body) else command_usage())
+
+
+def processing_request(respond, body):
+    if validate_command(body):
+        respond(f"Hi <@{body['user_id']}>, please kindly wait while we process your request.")
+
+        command = body.get("text").split()
+
+        org_name = command[1]
+        user_name = body['user_name']
+        user_email = app.client.users_info(user=body['user_id'])['user']['profile']['email']
+        user_pin = ''.join(choice(string.digits) for _ in range(6))
+
+        user_data = {
+            'name' : user_name,
+            'email' : user_email,
+            'pin' : user_pin,
+        }
+
+        if 'profile-key' in command[0]:
+            org, user = org_user(pritunl_obj=pritunl, org_name=org_name, user_name=user_name)
+
+            if user:
+                respond(f"Your profile already exists! \nUpdating your profile with new PIN.")
+                update = pritunl.user.put(
+                    org_id=org['id'],
+                    usr_id=user['id'],
+                    data=user_data
+                    )
+
+                if update:
+                    key_uri_url, key_view_url = profile_key(pritunl_obj=pritunl, org_id=update['organization'], usr_id=update['id'])
+
+                    respond_line = [
+                        f"\n",
+                        f":ballot_box_with_check: We Succesfully updated your VPN profile `{update['name']}` under the network organization `{update['organization_name']}`. \n",
+                        f"\n",
+                        f"Here is your newly recreated *Profile Key*: `{key_uri_url}` \n",
+                        f"And your *Connection PIN*: `{user_data['pin']}` \n",
+                        f" \n",
+                        f"_For other connection options, kindly open the <{key_view_url}|profile link>_. \n",
+                        f"_Such as *Changing PIN* or *Download a Profile Key* for other OS_. \n"
+                        f"_Take note that *Profile Key* links will expire after 24 hours_.",
+                    ]
+                    respond(" ".join(respond_line))
+
+            else:
+                respond(f"VPN profile creation is in progress. \nWhile waiting, please download the VPN <https://client.pritunl.com/#install|client> if you do not already have installed.")
+                create_user = pritunl.user.post(
+                    org_id=org['id'],
+                    data=user_data
+                    )
+
+                if create_user:
+                    for user in create_user:
+                        key_uri_url, key_view_url = profile_key(pritunl_obj=pritunl, org_id=user['organization'], usr_id=user['id'])
+
+                        respond_line = [
+                            f"\n",
+                            f":ballot_box_with_check: We successfully created your VPN profile `{user['name']}` under the organization `{user['organization_name']}`. \n",
+                            f" \n",
+                            f"Here is your newly created *Profile Key*: `{key_uri_url}` \n",
+                            f"And your *Connection PIN*: `{user_data['pin']}` \n",
+                            f" \n",
+                            f"_For other connection options, kindly open the <{key_view_url}|profile link>_. \n",
+                            f"_Such as *Changing PIN* or *Download a Profile Key* for other OS_. \n"
+                            f"_Take note that *Profile Key* links will expire after 24 hours_.",
+                        ]
+                        respond(" ".join(respond_line))
+
+
+app.command("/pritunl")(
+    ack=initial_acknowledgement,
+    lazy=[processing_request]
+)
