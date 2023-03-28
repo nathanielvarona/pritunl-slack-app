@@ -1,0 +1,33 @@
+- name: 'type: breaking'
+  description: New feature is created.
+  color: 66ff66
+- name: 'type: feature'
+  description: New feature is created.
+  color: 7FFBC6C
+- name: 'type: improvement'
+  description: Minor improvement of a feature.
+  color: 8D7BE7
+- name: 'type: bugs'
+  description: Partial fixes for under development feature.
+  color: D80073
+- name: 'type: maintenance'
+  description: Maintenance feature.
+  color: A20025
+- name: 'type: documentation'
+  description: Improvements or additions to documentation.
+  color: 1BA1E2
+- name: 'type: automation'
+  description: Continuous integration and deployment features and changes.
+  color: 20B2AA
+- name: 'type: dependencies'
+  description: Not a code refactor but a minor removal or additions of either code or configs.
+  color: 60A917
+- name: 'type: security'
+  description: Security Changes.
+  color: eb2d2d
+- name: 'type: chore'
+  description: Chores.
+  color: 38646B
+- name: 'hacktoberfest-accepted'
+  description: Hacktoberfest Participation.
+  color: 5AAEAD

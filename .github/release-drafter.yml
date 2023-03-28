@@ -1,0 +1,70 @@
+version-template: '$MAJOR.$MINOR.$PATCH'
+
+tag-template: 'v$RESOLVED_VERSION'
+name-template: 'v$RESOLVED_VERSION'
+
+categories:
+
+  - title: '✨ Breaking Features'
+    label: 'type: breaking'
+
+  - title: '💡 New Features'
+    label: 'type: feature'
+
+  - title: '🧩 Improvements'
+    label: 'type: improvement'
+
+  - title:  '🐞 Bug Fixes'
+    label: 'type: bugs'
+
+  - title:  '🔧 Maintenance'
+    label: 'type: maintenance'
+
+  - title: '📜 Documentations'
+    label: 'type: documentation'
+
+  - title: '🏗️ Automation'
+    label: 'type: automation'
+
+  - title: '🩺 Dependencies'
+    label: 'type: dependencies'
+
+  - title: '🔒 Security'
+    label: 'type: security'
+
+  - title: '🧹 Chores'
+    label: 'type: chore'
+
+version-resolver:
+  major:
+    labels:
+      - 'type: breaking'
+  minor:
+    labels:
+      - 'type: feature'
+  patch:
+    labels:
+      - 'type: improvement'
+      - 'type: bugs'
+      - 'type: maintenance'
+      - 'type: documentation'
+      - 'tyep: automation'
+      - 'type: dependencies'
+      - 'type: security'
+      - 'type: chore'
+
+references:
+  - main
+
+exclude-labels:
+  - 'skip-changelog'
+
+change-template: '* $TITLE (#$NUMBER) @$AUTHOR'
+template: |
+  # What's Changed
+
+  $CHANGES
+
+  Contributors: $CONTRIBUTORS
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
