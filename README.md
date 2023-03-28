@@ -1,6 +1,10 @@
 # pritunl-slack-app
 Pritunl Slack App Slash Commands
 
+## Pritunl Slack Slash Commands Screenshot
+
+![Pritunl Slack Slash Commands Screenshot](doc/img/pritunl-slack-slash-commands.png)
+
 ## Installation
 
 ```bash
