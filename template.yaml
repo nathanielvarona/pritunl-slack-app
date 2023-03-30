@@ -37,18 +37,22 @@ Parameters:
   PritunlApiToken:
     Type: String
     Description: EnvVar for PRITUNL_API_TOKEN
+    NoEcho: true
 
   PritunlApiSecret:
     Type: String
     Description: EnvVar for PRITUNL_API_SECRET
+    NoEcho: true
 
   SlackSigningSecret:
     Type: String
     Description: EnvVar for SLACK_SIGNING_SECRET
+    NoEcho: true
 
   SlackBotToken:
     Type: String
     Description: EnvVar for SLACK_BOT_TOKEN
+    NoEcho: true
 
 
 Globals:
@@ -68,12 +72,23 @@ Resources:
       Environment:
         Variables:
           PRITUNL_BASE_URL: !Ref PritunlBaseUrl
-          PRITUNL_API_TOKEN: !Ref PritunlApiToken
-          PRITUNL_API_SECRET: !Ref PritunlApiSecret
-          SLACK_SIGNING_SECRET: !Ref SlackSigningSecret
-          SLACK_BOT_TOKEN: !Ref SlackBotToken
+          PRITUNL_API_TOKEN: !Sub '{{resolve:secretsmanager:${AWSSecretPritunlApiToken}:SecretString}}'
+          PRITUNL_API_SECRET: !Sub '{{resolve:secretsmanager:${AWSSecretPritunlApiSecret}:SecretString}}'
+          SLACK_SIGNING_SECRET: !Sub '{{resolve:secretsmanager:${AWSSecretSlackSigningSecret}:SecretString}}'
+          SLACK_BOT_TOKEN: !Sub '{{resolve:secretsmanager:${AWSSecretSlackBotToken}:SecretString}}'
 
       Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Sid: SSMGetParameterPolicy
+              Effect: Allow
+              Action:
+                - "secretsmanager:Get*"
+              Resource:
+                - !Ref AWSSecretPritunlApiToken
+                - !Ref AWSSecretPritunlApiSecret
+                - !Ref AWSSecretSlackSigningSecret
+                - !Ref AWSSecretSlackBotToken
         - Version: '2012-10-17'
           Statement:
             - Sid: InvokeLambda
@@ -106,6 +121,30 @@ Resources:
           - x-api-key
           - x-amz-security-token
           - x-amz-user-agent
+
+  AWSSecretPritunlApiToken:
+    Type: "AWS::SecretsManager::Secret"
+    Properties:
+      Name: PritunlApiToken
+      SecretString: !Ref PritunlApiToken
+
+  AWSSecretPritunlApiSecret:
+    Type: "AWS::SecretsManager::Secret"
+    Properties:
+      Name: PritunlApiSecret
+      SecretString: !Ref PritunlApiSecret
+
+  AWSSecretSlackSigningSecret:
+    Type: "AWS::SecretsManager::Secret"
+    Properties:
+      Name: SlackSigningSecret
+      SecretString: !Ref SlackSigningSecret
+
+  AWSSecretSlackBotToken:
+    Type: "AWS::SecretsManager::Secret"
+    Properties:
+      Name: SlackBotToken
+      SecretString: !Ref SlackBotToken
 
 Outputs:
   PritunlSlackApi:
