@@ -1,16 +1,35 @@
+import os
 import string
+import importlib
 
 from random import choice
 from urllib.parse import urlparse
 
 from slack_bolt import App
-app = App(process_before_response=True)
 
 from pritunl_api import Pritunl
-pritunl = Pritunl()
-
 from pritunl_api.utils.query import org_user
 from pritunl_api.utils.genkey import profile_key
+
+from .cloud_vendor import check_serverless
+if check_serverless() == 'aws-lambda':
+    from .cloud_vendor.aws.secretsmanager import get_secret
+
+    app = App(
+        process_before_response = True,
+        signing_secret = get_secret(os.environ['SLACK_SIGNING_SECRET']),
+        token = get_secret(os.environ['SLACK_BOT_TOKEN'])
+    )
+
+    pritunl = Pritunl(
+        secret = get_secret(os.environ['PRITUNL_API_SECRET']),
+        token = get_secret(os.environ['PRITUNL_API_TOKEN'])
+    )
+
+else:
+    app = App()
+    pritunl = Pritunl()
+
 
 @app.middleware
 def log_request(logger, body, next):

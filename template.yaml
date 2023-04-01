@@ -12,8 +12,8 @@ Metadata:
           default: "General"
         Parameters:
           - PritunlBaseUrl
-          - PritunlApiToken
           - PritunlApiSecret
+          - PritunlApiToken
           - SlackSigningSecret
           - SlackBotToken
 
@@ -32,28 +32,34 @@ Metadata:
 Parameters:
   PritunlBaseUrl:
     Type: String
-    Description: EnvVar for PRITUNL_BASE_URL
-
-  PritunlApiToken:
-    Type: String
-    Description: EnvVar for PRITUNL_API_TOKEN
-    NoEcho: true
+    Description: Pritunl API Base Url
 
   PritunlApiSecret:
     Type: String
-    Description: EnvVar for PRITUNL_API_SECRET
+    Description: Pritunl API Secret
+    NoEcho: true
+
+  PritunlApiToken:
+    Type: String
+    Description: Pritunl API Token
     NoEcho: true
 
   SlackSigningSecret:
     Type: String
-    Description: EnvVar for SLACK_SIGNING_SECRET
+    Description: Slack Signing Secret
     NoEcho: true
 
   SlackBotToken:
     Type: String
-    Description: EnvVar for SLACK_BOT_TOKEN
+    Description: Salck Signing Token
     NoEcho: true
 
+Mappings:
+  RegionToLayerArnMap:
+    us-east-1:
+      "LayerArn": "arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4"
+    us-east-2:
+      "LayerArn": "arn:aws:lambda:us-east-2:590474943231:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4"
 
 Globals:
   Function:
@@ -65,17 +71,20 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: pritunl_slack_app/function
-      Handler: function_handler.handler
+      Handler: pritunl_slack_app.function_handler.handler
       Runtime: python3.9
       Architectures:
         - x86_64
       Environment:
         Variables:
           PRITUNL_BASE_URL: !Ref PritunlBaseUrl
-          PRITUNL_API_TOKEN: !Sub '{{resolve:secretsmanager:${AWSSecretPritunlApiToken}:SecretString}}'
-          PRITUNL_API_SECRET: !Sub '{{resolve:secretsmanager:${AWSSecretPritunlApiSecret}:SecretString}}'
-          SLACK_SIGNING_SECRET: !Sub '{{resolve:secretsmanager:${AWSSecretSlackSigningSecret}:SecretString}}'
-          SLACK_BOT_TOKEN: !Sub '{{resolve:secretsmanager:${AWSSecretSlackBotToken}:SecretString}}'
+          PRITUNL_API_SECRET: !Ref AWSSecretPritunlApiSecret
+          PRITUNL_API_TOKEN: !Ref AWSSecretPritunlApiToken
+          SLACK_SIGNING_SECRET: !Ref AWSSecretSlackSigningSecret
+          SLACK_BOT_TOKEN: !Ref AWSSecretSlackBotToken
+          SSM_PARAMETER_STORE_TTL: 120
+          SECRETS_MANAGER_TTL: 120
+
 
       Policies:
         - Version: '2012-10-17'
@@ -85,8 +94,8 @@ Resources:
               Action:
                 - "secretsmanager:Get*"
               Resource:
-                - !Ref AWSSecretPritunlApiToken
                 - !Ref AWSSecretPritunlApiSecret
+                - !Ref AWSSecretPritunlApiToken
                 - !Ref AWSSecretSlackSigningSecret
                 - !Ref AWSSecretSlackBotToken
         - Version: '2012-10-17'
@@ -98,6 +107,9 @@ Resources:
                 - "lambda:InvokeAsync"
               Resource:
                 - "*"
+      Layers:
+        - !FindInMap [RegionToLayerArnMap, !Ref "AWS::Region", LayerArn]
+
       Events:
         PritunlSlack:
           Type: HttpApi
@@ -122,17 +134,17 @@ Resources:
           - x-amz-security-token
           - x-amz-user-agent
 
-  AWSSecretPritunlApiToken:
-    Type: "AWS::SecretsManager::Secret"
-    Properties:
-      Name: PritunlApiToken
-      SecretString: !Ref PritunlApiToken
-
   AWSSecretPritunlApiSecret:
     Type: "AWS::SecretsManager::Secret"
     Properties:
       Name: PritunlApiSecret
       SecretString: !Ref PritunlApiSecret
+
+  AWSSecretPritunlApiToken:
+    Type: "AWS::SecretsManager::Secret"
+    Properties:
+      Name: PritunlApiToken
+      SecretString: !Ref PritunlApiToken
 
   AWSSecretSlackSigningSecret:
     Type: "AWS::SecretsManager::Secret"
