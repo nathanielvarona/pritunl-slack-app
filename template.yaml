@@ -85,7 +85,6 @@ Resources:
           SSM_PARAMETER_STORE_TTL: 120
           SECRETS_MANAGER_TTL: 120
 
-
       Policies:
         - Version: '2012-10-17'
           Statement:
@@ -110,29 +109,19 @@ Resources:
       Layers:
         - !FindInMap [RegionToLayerArnMap, !Ref "AWS::Region", LayerArn]
 
-      Events:
-        PritunlSlack:
-          Type: HttpApi
-          Properties:
-            Path: /
-            Method: POST
-            ApiId: !Ref PritunlSlackHttpApi
-
-  PritunlSlackHttpApi:
-    Type: AWS::Serverless::HttpApi
+  PritunlSlackUrlFunctionPermissions:
+    Type: AWS::Lambda::Permission
     Properties:
-      CorsConfiguration:
-        AllowMethods:
-          - POST
-        AllowOrigins:
-          - "*"
-        AllowHeaders:
-          - content-type
-          - x-amz-date
-          - authorization
-          - x-api-key
-          - x-amz-security-token
-          - x-amz-user-agent
+      FunctionName: !Ref PritunlSlackFunction
+      Action: lambda:InvokeFunctionUrl
+      Principal: "*"
+      FunctionUrlAuthType: NONE
+
+  PritunlSlackFunctionUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !Ref PritunlSlackFunction
+      AuthType: NONE
 
   AWSSecretPritunlApiSecret:
     Type: "AWS::SecretsManager::Secret"
@@ -159,9 +148,10 @@ Resources:
       SecretString: !Ref SlackBotToken
 
 Outputs:
-  PritunlSlackApi:
-    Description: "API Gateway endpoint URL for Prod stage for Pritunl Slack App function"
-    Value: !Sub "https://${PritunlSlackHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/"
+  PritunlSlackFunctionUrl:
+    Description: "Pritunl Slack App Lambda Function URL"
+    Value:
+      Fn::GetAtt: PritunlSlackFunctionUrl.FunctionUrl
   PritunlSlackFunction:
     Description: "Pritunl Slack App Lambda Function ARN"
     Value: !GetAtt PritunlSlackFunction.Arn
