@@ -1,6 +1,6 @@
 import os
 import string
-import importlib
+import json
 
 from random import choice
 from urllib.parse import urlparse
@@ -9,7 +9,7 @@ from slack_bolt import App
 
 from pritunl_api import Pritunl
 from pritunl_api.utils.query import org_user
-from pritunl_api.utils.genkey import profile_key
+from pritunl_api.utils.keygen import profile_key
 
 from .cloud_vendor import check_serverless
 if check_serverless() == 'aws-lambda':
@@ -68,18 +68,22 @@ def processing_request(respond, body):
 
         command = body.get("text").split()
 
-        org_name = command[1]
-        user_name = body['user_name']
-        user_email = app.client.users_info(user=body['user_id'])['user']['profile']['email']
-        user_pin = ''.join(choice(string.digits) for _ in range(6))
+        if 'api' in command[0] and 'status' in command[1]:
+            # Undocumented feature, hidden from the command usage for administrative and diagnostic purposes.
+            respond(f"```{json.dumps(pritunl.status(), indent=2)}```")
 
-        user_data = {
-            'name' : user_name,
-            'email' : user_email,
-            'pin' : user_pin,
-        }
+        elif 'profile-key' in command[0]:
+            org_name = command[1]
+            user_name = body['user_name']
+            user_email = app.client.users_info(user=body['user_id'])['user']['profile']['email']
+            user_pin = ''.join(choice(string.digits) for _ in range(6))
 
-        if 'profile-key' in command[0]:
+            user_data = {
+                'name' : user_name,
+                'email' : user_email,
+                'pin' : user_pin,
+            }
+
             org, user = org_user(pritunl_obj=pritunl, org_name=org_name, user_name=user_name)
 
             if user:
