@@ -63,7 +63,7 @@ Mappings:
 
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 5
     MemorySize: 128
 
 Resources:
@@ -88,10 +88,10 @@ Resources:
       Policies:
         - Version: '2012-10-17'
           Statement:
-            - Sid: SSMGetParameterPolicy
+            - Sid: SecretManagerPolicy
               Effect: Allow
               Action:
-                - "secretsmanager:Get*"
+                - "secretsmanager:GetSecretValue"
               Resource:
                 - !Ref AWSSecretPritunlApiSecret
                 - !Ref AWSSecretPritunlApiToken
