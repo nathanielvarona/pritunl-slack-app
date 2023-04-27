@@ -33,6 +33,7 @@ Parameters:
   PritunlBaseUrl:
     Type: String
     Description: Pritunl API Base Url
+    NoEcho: true
 
   PritunlApiSecret:
     Type: String
@@ -72,12 +73,12 @@ Resources:
     Properties:
       CodeUri: pritunl_slack_app/function
       Handler: pritunl_slack_app.function_handler.handler
-      Runtime: python3.9
+      Runtime: python3.10
       Architectures:
         - x86_64
       Environment:
         Variables:
-          PRITUNL_BASE_URL: !Ref PritunlBaseUrl
+          PRITUNL_BASE_URL: !Ref AWSPritunlBaseUrl
           PRITUNL_API_SECRET: !Ref AWSSecretPritunlApiSecret
           PRITUNL_API_TOKEN: !Ref AWSSecretPritunlApiToken
           SLACK_SIGNING_SECRET: !Ref AWSSecretSlackSigningSecret
@@ -93,6 +94,7 @@ Resources:
               Action:
                 - "secretsmanager:GetSecretValue"
               Resource:
+                - !Ref AWSPritunlBaseUrl
                 - !Ref AWSSecretPritunlApiSecret
                 - !Ref AWSSecretPritunlApiToken
                 - !Ref AWSSecretSlackSigningSecret
@@ -122,6 +124,12 @@ Resources:
     Properties:
       TargetFunctionArn: !Ref PritunlSlackFunction
       AuthType: NONE
+
+  AWSPritunlBaseUrl:
+    Type: "AWS::SecretsManager::Secret"
+    Properties:
+      Name: PritunlBaseUrl
+      SecretString: !Ref PritunlBaseUrl
 
   AWSSecretPritunlApiSecret:
     Type: "AWS::SecretsManager::Secret"

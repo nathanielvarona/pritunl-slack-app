@@ -22,6 +22,7 @@ if check_serverless() == 'aws-lambda':
     )
 
     pritunl = Pritunl(
+        url = get_secret(os.environ['PRITUNL_BASE_URL']),
         secret = get_secret(os.environ['PRITUNL_API_SECRET']),
         token = get_secret(os.environ['PRITUNL_API_TOKEN'])
     )
