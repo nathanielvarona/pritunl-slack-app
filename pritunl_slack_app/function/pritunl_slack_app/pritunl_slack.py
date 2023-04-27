@@ -3,7 +3,6 @@ import string
 import json
 
 from random import choice
-from urllib.parse import urlparse
 
 from slack_bolt import App
 
@@ -85,7 +84,7 @@ def processing_request(respond, body):
                 'pin' : user_pin,
             }
 
-            org, user = org_user(pritunl_obj=pritunl, org_name=org_name, user_name=user_name)
+            org, user = org_user(pritunl=pritunl, org_name=org_name, user_name=user_name)
 
             if user:
                 respond(f"Your profile already exists! \nUpdating your profile with new PIN.")
@@ -96,7 +95,7 @@ def processing_request(respond, body):
                     )
 
                 if update:
-                    key_uri_url, key_view_url = profile_key(pritunl_obj=pritunl, org_id=update['organization'], usr_id=update['id'])
+                    key_uri_url, key_view_url = profile_key(pritunl=pritunl, org_id=update['organization'], usr_id=update['id'])
 
                     respond_line = [
                         f"\n",
@@ -120,7 +119,7 @@ def processing_request(respond, body):
 
                 if create_user:
                     for user in create_user:
-                        key_uri_url, key_view_url = profile_key(pritunl_obj=pritunl, org_id=user['organization'], usr_id=user['id'])
+                        key_uri_url, key_view_url = profile_key(pritunl=pritunl, org_id=user['organization'], usr_id=user['id'])
 
                         respond_line = [
                             f"\n",
