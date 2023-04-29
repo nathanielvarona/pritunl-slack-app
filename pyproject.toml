@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pritunl-slack-app"
-version = "0.1.2"
+version = "0.1.3"
 description = "Pritunl Slack App Slash Commands"
 authors = ["Nathaniel Varona <nathaniel.varona+pypi@gmail.com>"]
 license = "MIT"
