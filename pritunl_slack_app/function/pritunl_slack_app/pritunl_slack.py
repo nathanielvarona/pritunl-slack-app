@@ -54,7 +54,7 @@ def validate_command(body):
 
 def initial_acknowledgement(body, ack):
     def command_usage():
-        return str(f"*:book: Usage:* `{body['command']} profile-key [NETWORK]`")
+        return str(f"*:book: Usage:* `{body['command']} profile-key [ORGANIZATION]`")
 
     def command_accepted():
         return str(f"*:ballot_box_with_check: Request Accepted:* `{' '.join([body['command'], body['text']])}`")

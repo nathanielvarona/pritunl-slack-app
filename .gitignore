@@ -131,3 +131,6 @@ dmypy.json
 .vscode
 .envrc
 .aws-sam
+.local
+
+pritunl_slack_app/function/requirements.txt
