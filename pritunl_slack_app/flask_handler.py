@@ -1,9 +1,13 @@
+import os
 import logging
+
 from slack_bolt.adapter.flask import SlackRequestHandler
 
 from .function.pritunl_slack_app.pritunl_slack import app
 
-logging.basicConfig(level=logging.DEBUG)
+LOG_LEVEL = logging.DEBUG if os.getenv("FLASK_DEBUG", 'False').lower() in ('true', '1') else logging.INFO
+
+logging.basicConfig(level=LOG_LEVEL)
 from flask import Flask, request
 
 flask_app = Flask(__name__)

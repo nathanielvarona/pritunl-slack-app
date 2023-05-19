@@ -87,4 +87,4 @@ ENV APP_PORT=${APP_PORT}
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["gunicorn", "--bind :${APP_PORT}", "--workers 1", "--threads 1", "--timeout 0", "\"${APP_NAME}.flask_handler:flask_app\""]
+CMD ["gunicorn", "${APP_NAME}.flask_handler:flask_app", "--bind :${APP_PORT}"]
