@@ -27,7 +27,7 @@ if check_serverless() == 'aws-lambda':
     )
 
 else:
-    app = App()
+    app = App(token_verification_enabled = False)
     pritunl = Pritunl()
 
 
