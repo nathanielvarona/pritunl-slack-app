@@ -74,11 +74,11 @@ sam deploy --guided
 ```bash
 docker run -it --rm \
   --env PRITUNL_BASE_URL=https://vpn.domain.tld/ \
-  --env PRITUNL_API_SECRET=#### \
-  --env PRITUNL_API_TOKEN=#### \
-  --env SLACK_SIGNING_SECRET=#### \
-  --env SLACK_BOT_TOKEN=#### \
-  --env GUNICORN_CMD_ARGS="--timeout 0"
+  --env PRITUNL_API_SECRET="####" \
+  --env PRITUNL_API_TOKEN="####" \
+  --env SLACK_SIGNING_SECRET="####" \
+  --env SLACK_BOT_TOKEN="####" \
+  --env GUNICORN_CMD_ARGS="--timeout 0" \
   --env APP_PORT=8081 \
   --publish 8081:8081 \
   nathanielvarona/pritunl-slack-app
@@ -91,10 +91,10 @@ Example 1: Enable AsyncIO Workers by increasing the number of Gunicorn workers a
 ```bash
 docker run -it --rm \
   --env PRITUNL_BASE_URL=https://vpn.domain.tld/ \
-  --env PRITUNL_API_SECRET=#### \
-  --env PRITUNL_API_TOKEN=#### \
-  --env SLACK_SIGNING_SECRET=#### \
-  --env SLACK_BOT_TOKEN=#### \
+  --env PRITUNL_API_SECRET="####" \
+  --env PRITUNL_API_TOKEN="####" \
+  --env SLACK_SIGNING_SECRET="####" \
+  --env SLACK_BOT_TOKEN="####" \
   --env GUNICORN_CMD_ARGS="--timeout 0 --workers 5 --threads 2" \
   --env APP_PORT=8081 \
   --publish 8081:8081 \
@@ -106,10 +106,10 @@ Example 2: Enable debug mode.
 ```bash
 docker run -it --rm \
   --env PRITUNL_BASE_URL=https://vpn.domain.tld/ \
-  --env PRITUNL_API_SECRET=#### \
-  --env PRITUNL_API_TOKEN=#### \
-  --env SLACK_SIGNING_SECRET=#### \
-  --env SLACK_BOT_TOKEN=#### \
+  --env PRITUNL_API_SECRET="####" \
+  --env PRITUNL_API_TOKEN="####" \
+  --env SLACK_SIGNING_SECRET="####" \
+  --env SLACK_BOT_TOKEN="####" \
   --env GUNICORN_CMD_ARGS="--timeout 0" \
   --env FLASK_DEBUG=True \
   --env APP_PORT=8081 \
