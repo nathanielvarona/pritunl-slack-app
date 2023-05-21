@@ -69,6 +69,16 @@ sam deploy --guided
 
 #### Using Flask and Gunicorn App Handlers
 
+##### Build an Image
+
+```bash
+docker buildx build . \
+  --file flask-gunicorn.Dockerfile \
+  --progress plain \
+  --target production \
+  --tag nathanielvarona/pritunl-slack-app
+```
+
 ##### Production Mode
 
 ```bash
