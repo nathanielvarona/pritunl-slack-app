@@ -64,7 +64,7 @@ Mappings:
 
 Globals:
   Function:
-    Timeout: 5
+    Timeout: 10
     MemorySize: 128
 
 Resources:
@@ -74,6 +74,7 @@ Resources:
       CodeUri: pritunl_slack_app/function
       Handler: pritunl_slack_app.function_handler.handler
       Runtime: python3.10
+      PackageType: Zip
       Architectures:
         - x86_64
       Environment:
