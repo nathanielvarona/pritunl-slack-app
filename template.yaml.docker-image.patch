@@ -1,0 +1,63 @@
+--- a/template.yaml
++++ b/template.yaml
+@@ -55,12 +55,25 @@
+     Description: Salck Signing Token
+     NoEcho: true
+ 
+-Mappings:
+-  RegionToLayerArnMap:
+-    us-east-1:
+-      "LayerArn": "arn:aws:lambda:us-east-1:177933569100:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4"
+-    us-east-2:
+-      "LayerArn": "arn:aws:lambda:us-east-2:590474943231:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4"
++  ###
++  # Parameters used only for `sam build`
++  ###
++  AwsAccessKeyId:
++    Type: String
++    Description: AWS_ACCESS_KEY_ID
++    NoEcho: true
++    Default: ''
++
++  AwsSecretAccessKey:
++    Type: String
++    Description: AWS_SECRET_ACCESS_KEY
++    NoEcho: true
++    Default: ''
++
++  Tag:
++    Type: String
++    Default: latest
++    Description: Docker tag to build and deploy.
+ 
+ Globals:
+   Function:
+@@ -71,10 +84,7 @@
+   PritunlSlackFunction:
+     Type: AWS::Serverless::Function
+     Properties:
+-      CodeUri: pritunl_slack_app/function
+-      Handler: pritunl_slack_app.function_handler.handler
+-      Runtime: python3.10
+-      PackageType: Zip
++      PackageType: Image
+       Architectures:
+         - x86_64
+       Environment:
+@@ -109,8 +119,14 @@
+                 - "lambda:InvokeAsync"
+               Resource:
+                 - "*"
+-      Layers:
+-        - !FindInMap [RegionToLayerArnMap, !Ref "AWS::Region", LayerArn]
++    Metadata:
++      Dockerfile: lambda-function.Dockerfile
++      DockerContext: .
++      DockerTag: !Ref Tag
++
++      DockerBuildArgs:
++        AWS_ACCESS_KEY_ID: !Ref AwsAccessKeyId
++        AWS_SECRET_ACCESS_KEY: !Ref AwsSecretAccessKey
+ 
+   PritunlSlackUrlFunctionPermissions:
+     Type: AWS::Lambda::Permission
