@@ -14,9 +14,11 @@ slack-bolt = "~1.18.0"
 flask = {version = "~2.3.1", optional = true}
 gunicorn = {version = "~20.1.0", optional = true}
 flask-healthz = {version = "^0.0.3", optional = true}
+boto3 = {version = "^1.26.137", optional = true}
 
 [tool.poetry.extras]
-flask =  ["flask", "gunicorn", "flask-healthz"]
+flask = ["flask", "gunicorn", "flask-healthz"]
+aws = ["boto3"]
 
 [build-system]
 requires = ["poetry-core"]
