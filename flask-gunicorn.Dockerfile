@@ -1,13 +1,13 @@
 ARG APP_NAME=pritunl_slack_app
 ARG APP_PATH=/opt/${APP_NAME}
 ARG PYTHON_VERSION=3.10.7
-ARG POETRY_VERSION=1.4.2
+ARG POETRY_VERSION=1.8.2
 ARG APP_PORT=9000
 
 #
 # Stage: staging
 #
-FROM python:${PYTHON_VERSION} as staging
+FROM python:${PYTHON_VERSION} AS staging
 ARG APP_NAME
 ARG APP_PATH
 ARG POETRY_VERSION
@@ -22,7 +22,7 @@ ENV \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     POETRY_NO_INTERACTION=1
 
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python
+RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PATH="$POETRY_HOME/bin:$PATH"
 
 WORKDIR ${APP_PATH}
@@ -32,7 +32,7 @@ COPY ./${APP_NAME} ./${APP_NAME}
 #
 # Stage: development
 #
-FROM staging as development
+FROM staging AS development
 ARG APP_NAME
 ARG APP_PATH
 ARG APP_PORT
@@ -51,7 +51,7 @@ CMD ["flask", "run"]
 #
 # Stage: build
 #
-FROM staging as build
+FROM staging AS build
 ARG APP_PATH
 
 WORKDIR ${APP_PATH}
@@ -61,7 +61,7 @@ RUN poetry export --extras flask --format requirements.txt --output constraints.
 #
 # Stage: production
 #
-FROM python:${PYTHON_VERSION} as production
+FROM python:${PYTHON_VERSION} AS production
 ARG APP_NAME
 ARG APP_PATH
 ARG APP_PORT
