@@ -5,9 +5,9 @@ ARG FUNCTION_DIR=/function
 #
 # Stage: build
 #
-FROM python:${RUNTIME_VERSION}-${DISTRO_VERSION} as build-image
+FROM python:${RUNTIME_VERSION}-${DISTRO_VERSION} AS build-image
 
-ARG POETRY_VERSION=1.4.2
+ARG POETRY_VERSION=1.8.2
 ARG APP_NAME=pritunl_slack_app
 ARG APP_PATH=/opt/${APP_NAME}
 ARG FUNCTION_DIR
@@ -40,14 +40,17 @@ ENV \
 
 RUN apt-get update && \
     apt-get install -y \
-    curl \
-    unzip
+        curl \
+        unzip \
+        && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install
 
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python
+RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PATH="$POETRY_HOME/bin:$PATH"
 
 WORKDIR ${APP_PATH}
@@ -55,6 +58,7 @@ COPY ./poetry.lock ./pyproject.toml ./README.md ./
 COPY ./${APP_NAME} ./${APP_NAME}
 
 RUN poetry build --format wheel
+RUN pip install poetry-plugin-export
 RUN poetry export --extras aws \
     --without-hashes \
     --format requirements.txt \

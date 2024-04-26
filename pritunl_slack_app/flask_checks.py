@@ -1,5 +1,5 @@
 def liveness():
-    pass #TODO: Create an API Endpoints Checks
+    pass
 
 def readiness():
-    pass #TODO: Create an API Endpoints Checks
+    pass
