@@ -396,13 +396,13 @@ files = [
 
 [[package]]
 name = "pritunl-api"
-version = "1.1.11"
+version = "1.1.12"
 description = "Pritunl API Client for Python"
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "pritunl_api-1.1.11-py3-none-any.whl", hash = "sha256:86243e9442178249e54b18be25bb6b964cb7907b4987d35b8385983bd0fd0d33"},
-    {file = "pritunl_api-1.1.11.tar.gz", hash = "sha256:617cfc7f528c8f8a8767933b4f1513c0a612e34a91107efb1d293997dda76caf"},
+    {file = "pritunl_api-1.1.12-py3-none-any.whl", hash = "sha256:3101b6d4fbaa19b736deeb779531bd2a089af7739574e42d066cf0cf71dfb770"},
+    {file = "pritunl_api-1.1.12.tar.gz", hash = "sha256:23c197150a244b8b8f55e65f94ad2621f22d79edb97fe11d8a8d9bc6155a6daf"},
 ]
 
 [package.dependencies]
@@ -565,4 +565,4 @@ flask = ["flask", "flask-healthz", "gunicorn"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.11"
-content-hash = "16155b53d47f006b9f29a5780bf9ab73717564beb539eccb0ae594f0af915338"
+content-hash = "efbf1255104fe024f0d793ecb6eb0112d1bccced10f8d18f4d5bdc52e8557526"
