@@ -37,7 +37,7 @@ jobs:
           file: flask-gunicorn.Dockerfile
           target: production
           tags: |
-            nathanielvarona/pritunl-slack-app,
-            nathanielvarona/pritunl-slack-app:${{ steps.extract_tag.outputs.tag_version }}
+            nathanielvarona/pritunl-slack-app:${{ steps.extract_tag.outputs.tag_version }},
+            nathanielvarona/pritunl-slack-app:latest
           platforms: linux/amd64,linux/arm64
           push: true
