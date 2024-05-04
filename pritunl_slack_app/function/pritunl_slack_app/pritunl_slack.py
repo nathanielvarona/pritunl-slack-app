@@ -33,11 +33,13 @@ else:
 
 @app.middleware
 def log_request(logger, body, next):
+    """Log incoming requests"""
     logger.debug(body)
     return next()
 
 
-def validate_command(body):
+def validate_command(body: dict) -> bool:
+    """Validate incoming command"""
     command_args = body.get("text")
     if command_args is None or len(command_args) == 0:
         return False
@@ -52,7 +54,8 @@ def validate_command(body):
             return False
 
 
-def initial_acknowledgement(body, ack):
+def initial_acknowledgement(body: dict, ack):
+    """Send initial acknowledgement response"""
     def command_usage():
         return str(f"*:book: Usage:* `{body['command']} profile-key [ORGANIZATION]`")
 
@@ -61,8 +64,8 @@ def initial_acknowledgement(body, ack):
 
     ack(command_accepted() if validate_command(body) else command_usage())
 
-
-def processing_request(respond, body):
+def processing_request(respond, body: dict):
+    """Process incoming request"""
     if validate_command(body):
         respond(f"Hi <@{body['user_id']}>, please kindly wait while we process your request.")
 
