@@ -28,6 +28,3 @@
 - name: 'type: chore'
   description: Chores.
   color: 38646B
-- name: 'hacktoberfest-accepted'
-  description: Hacktoberfest Participation.
-  color: 5AAEAD
